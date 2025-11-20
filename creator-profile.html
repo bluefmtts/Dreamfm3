@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creator Profile - DreamFM</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        body {
+            padding-bottom: 80px;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #1a1a1a, #2a1a2e);
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 2px solid #ab47bc;
+        }
+
+        .creator-avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #ab47bc;
+            margin: 0 auto 20px;
+            display: block;
+            box-shadow: 0 5px 20px rgba(171, 71, 188, 0.4);
+        }
+
+        .creator-name-large {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .creator-bio {
+            color: #b0b0b0;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .creator-stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            text-align: center;
+        }
+
+        .stat-box-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ab47bc;
+        }
+
+        .stat-box-label {
+            font-size: 0.8rem;
+            color: #b0b0b0;
+        }
+
+        .subscribe-btn {
+            background: linear-gradient(135deg, #ab47bc, #e91e63);
+            border: none;
+            color: white;
+            padding: 12px 40px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(171, 71, 188, 0.4);
+            transition: all 0.3s;
+        }
+
+        .subscribe-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(171, 71, 188, 0.6);
+        }
+
+        .subscribe-btn.subscribed {
+            background: linear-gradient(135deg, #10b981, #34d399);
+        }
+
+        .audiobooks-section {
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(171, 71, 188, 0.3);
+        }
+
+        .audiobooks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .audiobook-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .audiobook-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(171, 71, 188, 0.3);
+        }
+
+        .audiobook-cover {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .audiobook-info {
+            padding: 10px;
+        }
+
+        .audiobook-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .audiobook-author {
+            font-size: 0.75rem;
+            color: #b0b0b0;
+            margin-top: 5px;
+        }
+
+        .lock-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .back-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(171, 71, 188, 0.3);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            z-index: 1000;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(171, 71, 188, 0.2);
+            border-top-color: #ab47bc;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .audiobooks-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="loadingContainer" class="loading">
+        <div class="spinner"></div>
+        <p>Loading creator profile...</p>
+    </div>
+
+    <div id="profileContainer" style="display: none;">
+        <!-- Profile Header -->
+        <div class="profile-header">
+            <img id="creatorAvatar" src="" alt="Creator" class="creator-avatar-large">
+            <h1 id="creatorName" class="creator-name-large"></h1>
+            <p id="creatorBio" class="creator-bio"></p>
+            
+            <div class="creator-stats-row">
+                <div class="stat-box">
+                    <div id="totalBooks" class="stat-box-value">0</div>
+                    <div class="stat-box-label">Audiobooks</div>
+                </div>
+                <div class="stat-box">
+                    <div id="totalSubscribers" class="stat-box-value">0</div>
+                    <div class="stat-box-label">Subscribers</div>
+                </div>
+                <div class="stat-box">
+                    <div id="creatorRating" class="stat-box-value">0.0</div>
+                    <div class="stat-box-label">Rating</div>
+                </div>
+            </div>
+
+            <button id="subscribeBtn" class="subscribe-btn" onclick="handleSubscribe()">
+                <i class="fa-solid fa-crown"></i> Subscribe for ₹29/month
+            </button>
+        </div>
+
+        <!-- Audiobooks Section -->
+        <div class="audiobooks-section">
+            <div class="section-title">📚 Audiobooks</div>
+            <div id="audiobooksGrid" class="audiobooks-grid">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading audiobooks...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <button class="back-btn" onclick="window.history.back()">
+        <i class="fa-solid fa-arrow-left"></i> Back
+    </button>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    
+    <script src="firebase-config.js"></script>
+    <script src="auth.js"></script>
+    <script src="subscription.js"></script>
+    <script src="creator-profile.js"></script>
+    
+</body>
+</html>
